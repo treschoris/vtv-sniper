@@ -36,6 +36,11 @@ import Layout from '../layouts/Layout.astro';
         </form>
     </div>
 
+    <div id="installArea" style="display: none; background: #ebf8ff; border: 1px id #bee3f8; padding: 15px; border-radius: 12px; margin: 20px auto; max-width: 400px; text-align: center;">
+    <p style="font-size: 0.9rem; color: #2b6cb0; margin-bottom: 10px;">📲 <strong>¿Querés tener la calculadora a mano?</strong></p>
+    <button id="installBtn" style="background: #3182ce; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer;">Instalar App</button>
+    </div>
+
 	<section style="max-width: 400px; margin: 40px auto; font-size: 0.9rem; color: #4a5568; line-height: 1.5;">
     <h2 style="font-size: 1.2rem; font-weight: bold; color: #2d3748; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Preguntas Frecuentes</h2>
     
@@ -55,9 +60,7 @@ import Layout from '../layouts/Layout.astro';
     </div>
 </section>
 
-
     <!-- Trust Footer - Helps distinguish from scams -->
-    <!-- Updated Trust Footer with correct links -->
 <footer style="max-width: 400px; margin: 30px auto; text-align: center; font-size: 0.75rem; color: #718096; line-height: 1.6;">
     <p><strong>Aviso Importante:</strong> Herramienta informativa independiente.</p>
     <p class="mb-2">No somos el sitio oficial ni solicitamos pagos. No pedimos datos de tarjetas.</p>
@@ -68,7 +71,6 @@ import Layout from '../layouts/Layout.astro';
         <p>📍 <strong>Provincia (PBA):</strong> <a href="https://www.vtv.minfra.gba.gob.ar/ervtv.php" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: underline;">vtv.minfra.gba.gob.ar</a></p>
     </div>
 </footer>
-
 
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; padding: 20px; }
@@ -81,47 +83,27 @@ import Layout from '../layouts/Layout.astro';
         .obligatorio { background: #fff5f5; color: #822727; border: 1px solid #feb2b2; }
     </style>
 
-    <script>
-        import { getVTVStatus, digitToMonth } from '../utils/vtvLogic.js';
-
-        document.getElementById('calcBtn').addEventListener('click', () => {
-            const juris = document.getElementById('juris').value;
-            const year = parseInt(document.getElementById('year').value);
-            const km = parseInt(document.getElementById('km').value);
-            const digit = document.getElementById('digit').value;
-
-            const res = getVTVStatus(juris, year, km);
-            const resultDiv = document.getElementById('result');
-            
-            resultDiv.style.display = 'block';
-            resultDiv.className = res.status === 'Exento' ? 'exento' : 'obligatorio';
-            resultDiv.innerHTML = `<span style="font-size: 1.1rem;">Estado: <strong>${res.status}</strong></span><br><p style="margin: 5px 0;">${res.info}</p>Tu mes asignado: <b>${digitToMonth[digit]}</b>`;
-        });
-
-		let deferredPrompt;
+<script>
+    let deferredPrompt;
+const installArea = document.getElementById('installArea');
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent Chrome 67 and earlier from automatically showing the prompt
-  e.preventDefault();
-  // Stash the event so it can be triggered later.
-  deferredPrompt = e;
+    e.preventDefault();
+    deferredPrompt = e;
+    // Only show the install card if the browser supports the prompt
+    installArea.style.display = 'block';
 });
 
-// If you have an "Add to Home Screen" button with id="installBtn"
-const installBtn = document.getElementById('installBtn');
-if (installBtn) {
-  installBtn.addEventListener('click', async () => {
+document.getElementById('installBtn')?.addEventListener('click', async () => {
     if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User response to the install prompt: ${outcome}`);
-      deferredPrompt = null;
-    } else {
-      alert("Para instalar, buscá 'Agregar a pantalla de inicio' en el menú de tu navegador.");
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            installArea.style.display = 'none';
+        }
+        deferredPrompt = null;
     }
-  });
-}
-
-    </script>
+});
+</script>
 </Layout>
 
