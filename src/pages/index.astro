@@ -10,16 +10,16 @@ import Layout from '../layouts/Layout.astro';
             <p style="color: #718096; font-size: 0.9rem;">Calculadora de Vencimiento y Turnos</p>
         </header>
         
-        <label for="juris" style="font-size: 0.8rem; font-weight: bold; color: #4a5568;">Jurisdicción:</label>
+        <label for="juris" style="font-size: 0.8rem; font-weight: bold; color: #4a5568;">Lugar de Patentamiento:</label>
         <select id="juris">
-            <option value="CABA">CABA (Decreto 139)</option>
-            <option value="PBA">Provincia Buenos Aires</option>
+            <option value="CABA">CABA (Decreto 139 2026)</option>
+            <option value="PBA">Provincia de Buenos Aires</option>
         </select>
         
         <input id="year" type="number" placeholder="Año del auto (ej. 2022)" />
         <input id="km" type="number" placeholder="Kilometraje (ej. 45000)" />
         
-        <label for="digit" style="font-size: 0.8rem; font-weight: bold; color: #4a5568;">Último número de patente:</label>
+        <label for="digit" style="font-size: 0.8rem; font-weight: bold; color: #4a5568;">Mi patente termina en:</label>
         <select id="digit">
             {[2,3,4,5,6,7,8,9,0,1].map(d => <option value={d}>{d}</option>)}
         </select>
@@ -30,15 +30,15 @@ import Layout from '../layouts/Layout.astro';
 
         <!-- Netlify Form (Invisible but works for SEO and lead capture) -->
         <form name="avisos-vtv" method="POST" data-netlify="true" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
-            <p style="font-size: 0.85rem; margin-bottom: 8px;">¿Querés que te avisemos cuando haya turnos?</p>
+            <p style="font-size: 0.85rem; margin-bottom: 8px;">¿Querés que te avisemos cuando haya turnos VTV?</p>
             <input type="email" name="email" placeholder="Tu email" required style="font-size: 0.8rem; padding: 8px;" />
-            <button type="submit" style="background: #28a745; padding: 8px; font-size: 0.8rem;">Avisame al toque</button>
+            <button type="submit" style="background: #28a745; padding: 8px; font-size: 0.8rem;">Avisame cuando me toque hacer la VTV</button>
         </form>
     </div>
 
     <div id="installArea" style="display: none; background: #ebf8ff; border: 1px id #bee3f8; padding: 15px; border-radius: 12px; margin: 20px auto; max-width: 400px; text-align: center;">
-    <p style="font-size: 0.9rem; color: #2b6cb0; margin-bottom: 10px;">📲 <strong>¿Querés tener la calculadora a mano?</strong></p>
-    <button id="installBtn" style="background: #3182ce; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer;">Instalar App</button>
+    <p style="font-size: 0.9rem; color: #2b6cb0; margin-bottom: 10px;">📲 <strong>¿Querés tener la calculadora VTV a mano?</strong></p>
+    <button id="installBtn" style="background: #3182ce; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer;">Agregar al Inicio</button>
     </div>
 
 	<section style="max-width: 400px; margin: 40px auto; font-size: 0.9rem; color: #4a5568; line-height: 1.5;">
@@ -84,26 +84,65 @@ import Layout from '../layouts/Layout.astro';
     </style>
 
 <script>
-    let deferredPrompt;
-const installArea = document.getElementById('installArea');
+    // @ts-ignore
+    import { getVTVStatus, digitToMonth } from '../utils/vtvLogic.js';
 
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    // Only show the install card if the browser supports the prompt
-    installArea.style.display = 'block';
-});
+    // 1. CALCULATION LOGIC
+    const calcBtn = document.getElementById('calcBtn');
+    const jurisSelect = document.getElementById('juris') as HTMLSelectElement;
+    const yearInput = document.getElementById('year') as HTMLInputElement;
+    const kmInput = document.getElementById('km') as HTMLInputElement;
+    const digitSelect = document.getElementById('digit') as HTMLSelectElement;
+    const resultDiv = document.getElementById('result');
 
-document.getElementById('installBtn')?.addEventListener('click', async () => {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            installArea.style.display = 'none';
-        }
-        deferredPrompt = null;
+    if (calcBtn && jurisSelect && yearInput && kmInput && digitSelect && resultDiv) {
+        calcBtn.addEventListener('click', () => {
+            const juris = jurisSelect.value;
+            const year = parseInt(yearInput.value);
+            const km = parseInt(kmInput.value);
+            const digit = digitSelect.value;
+
+            const res = getVTVStatus(juris, year, km);
+            
+            // THE FIX: Tell TS that 'digit' is a valid key of 'digitToMonth'
+            const monthName = digitToMonth[digit as keyof typeof digitToMonth];
+
+            resultDiv.style.display = 'block';
+            resultDiv.className = res.status === 'Exento' ? 'exento' : 'obligatorio';
+            resultDiv.innerHTML = `
+                <span style="font-size: 1.1rem;">Estado: <strong>${res.status}</strong></span><br>
+                <p style="margin: 5px 0;">${res.info}</p>
+                Tu mes asignado: <b>${monthName}</b>
+            `;
+        });
     }
-});
+
+    // 2. INSTALL LOGIC
+    let deferredPrompt: any;
+    const installArea = document.getElementById('installArea');
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installArea) {
+            installArea.style.display = 'block';
+        }
+    });
+
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted' && installArea) {
+                    installArea.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+    }
 </script>
+
 </Layout>
 
