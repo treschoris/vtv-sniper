@@ -1,148 +1,69 @@
 ---
 import Layout from '../layouts/Layout.astro';
-// Logic imports stay the same
 ---
-
-<Layout title="Consultá el Vencimiento de tu VTV - CABA y Provincia">
+<Layout title="VTV Próxima: Calculá tu vencimiento Decreto 139">
     <div class="card">
-        <header style="text-align: center; margin-bottom: 20px;">
-            <h1 style="color: #2d3748; margin-bottom: 5px;">¿Cuándo me toca la VTV?</h1>
-            <p style="color: #718096; font-size: 0.9rem;">Calculadora de turnos VTV, CABA y Provincia</p>
+        <header style="text-align: center;">
+            <h1 style="margin-bottom: 0;">VTV Próxima</h1>
+            <p style="color: #64748b; margin-bottom: 1.5rem;">Calculadora oficial 2026</p>
         </header>
         
-        <label for="juris" style="font-size: 0.8rem; font-weight: bold; color: #4a5568;">Lugar de Patentamiento:</label>
+        <label>Jurisdicción:</label>
         <select id="juris">
-            <option value="CABA">CABA (Decreto 139 2026)</option>
+            <option value="CABA">CABA (Decreto 139)</option>
             <option value="PBA">Provincia de Buenos Aires</option>
         </select>
         
-        <input id="year" type="number" placeholder="Año del auto (ej. 2022)" />
-        <input id="km" type="number" placeholder="Kilometraje (ej. 45000)" />
+        <div id="caba-extra-fields">
+            <label>Mes de Patentamiento:</label>
+            <select id="patentMonth">
+                {["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"].map((m, i) => (
+                    <option value={i}>{m}</option>
+                ))}
+            </select>
+        </div>
+
+        <input id="year" type="number" placeholder="Año (ej. 2022)" />
+        <input id="km" type="number" placeholder="Kilometraje actual" />
         
-        <label for="digit" style="font-size: 0.8rem; font-weight: bold; color: #4a5568;">Mi patente termina en:</label>
+        <label>Patente termina en:</label>
         <select id="digit">
             {[2,3,4,5,6,7,8,9,0,1].map(d => <option value={d}>{d}</option>)}
         </select>
         
-        <button id="calcBtn">Ver Fecha VTV según patente</button>
+        <button id="calcBtn">Calcular Vencimiento</button>
         
-        <div id="result"></div>
-
-        <!-- Netlify Form (Invisible but works for SEO and lead capture) -->
-        <form name="avisos-vtv" method="POST" data-netlify="true" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
-            <p style="font-size: 0.85rem; margin-bottom: 8px;">¿Querés que te avisemos cuando vence la VTV?</p>
-            <input type="email" name="email" placeholder="Tu email" required style="font-size: 0.8rem; padding: 8px;" />
-            <button type="submit" style="background: #28a745; padding: 8px; font-size: 0.8rem;">Avisame cuando me toca la VTV</button>
-        </form>
+        <div id="result" style="margin-top: 1.5rem; text-align: center; font-weight: 500;"></div>
     </div>
 
-    <div id="installArea" style="display: none; background: #ebf8ff; border: 1px id #bee3f8; padding: 15px; border-radius: 12px; margin: 20px auto; max-width: 400px; text-align: center;">
-    <p style="font-size: 0.9rem; color: #2b6cb0; margin-bottom: 10px;">📲 <strong>¿Querés tener el vencimiento VTV a mano?</strong></p>
-    <button id="installBtn" style="background: #3182ce; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer;">Agregar al Inicio</button>
-    </div>
+    <script>
+        import { getVTVStatus } from '../logic/vtvLogic.js';
 
-	<section style="max-width: 400px; margin: 40px auto; font-size: 0.9rem; color: #4a5568; line-height: 1.5;">
-    <h2 style="font-size: 1.2rem; font-weight: bold; color: #2d3748; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Preguntas Frecuentes</h2>
-    
-    <div style="margin-bottom: 15px;">
-        <p style="font-weight: bold; color: #2d3748;">¿Cuándo es obligatoria la VTV en CABA?</p>
-        <p>Según el Decreto 139, los autos particulares deben realizar su primera VTV al cumplir 4 años (tomando el mes de patentamiento) o alcanzar los 64.000 km, lo que ocurra primero.</p>
-    </div>
+        const juris = document.getElementById('juris');
+        const extraFields = document.getElementById('caba-extra-fields');
+        const btn = document.getElementById('calcBtn');
 
-    <div style="margin-bottom: 15px;">
-        <p style="font-weight: bold; color: #2d3748;">¿Qué mes me toca la VTV según mi patente?</p>
-        <p>El cronograma es: Febrero (2), Marzo (3), Abril (4), Mayo (5), Junio (6), Julio (7), Agosto (8), Septiembre (9), Octubre (0) y Noviembre (1). Enero y Diciembre son para rezagados.</p>
-    </div>
+        // Toggle Month Field visibility
+        juris.addEventListener('change', (e) => {
+            extraFields.classList.toggle('hidden', e.target.value === 'PBA');
+        });
 
-    <div style="margin-bottom: 15px;">
-        <p style="font-weight: bold; color: #2d3748;">¿Puedo circular con la VTV vencida si tengo turno?</p>
-        <p>En Provincia de Buenos Aires, podés circular con la VTV vencida <strong>solo si tenés el comprobante de turno impreso</strong> y este fue sacado antes del vencimiento. En CABA, las reglas son más estrictas; consultá siempre el sitio oficial.</p>
-    </div>
-</section>
+        btn.addEventListener('click', () => {
+            const res = getVTVStatus(
+                juris.value,
+                parseInt(document.getElementById('year').value),
+                parseInt(document.getElementById('km').value),
+                parseInt(document.getElementById('digit').value),
+                parseInt(document.getElementById('patentMonth').value)
+            );
 
-    <!-- Trust Footer - Helps distinguish from scams -->
-<footer style="max-width: 400px; margin: 30px auto; text-align: center; font-size: 0.75rem; color: #718096; line-height: 1.6;">
-    <p><strong>Aviso Importante:</strong> Herramienta informativa independiente.</p>
-    <p class="mb-2">No somos el sitio oficial ni solicitamos pagos. No pedimos datos de tarjetas.</p>
-    
-    <div style="background: #edf2f7; padding: 10px; border-radius: 8px; margin-top: 10px;">
-        <p style="font-weight: bold; margin-bottom: 5px;">Links a Turnos Oficiales:</p>
-        <p>📍 <strong>CABA:</strong> <a href="https://www.suvtv.com.ar/turnos/" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: underline;">suvtv.com.ar/turnos</a></p>
-        <p>📍 <strong>Provincia (PBA):</strong> <a href="https://www.vtv.minfra.gba.gob.ar/ervtv.php" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: underline;">vtv.minfra.gba.gob.ar</a></p>
-    </div>
-</footer>
-
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 16px; max-width: 400px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        input, select, button { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
-        button { background: #007bff; color: white; font-weight: bold; cursor: pointer; border: none; transition: opacity 0.2s; }
-        button:hover { opacity: 0.9; }
-        #result { margin-top: 10px; padding: 15px; border-radius: 8px; display: none; line-height: 1.5; }
-        .exento { background: #f0fff4; color: #22543d; border: 1px solid #c6f6d5; }
-        .obligatorio { background: #fff5f5; color: #822727; border: 1px solid #feb2b2; }
-    </style>
-
-<script>
-    // @ts-ignore
-    import { getVTVStatus, digitToMonth } from '../utils/vtvLogic.js';
-
-    // 1. CALCULATION LOGIC
-    const calcBtn = document.getElementById('calcBtn');
-    const jurisSelect = document.getElementById('juris') as HTMLSelectElement;
-    const yearInput = document.getElementById('year') as HTMLInputElement;
-    const kmInput = document.getElementById('km') as HTMLInputElement;
-    const digitSelect = document.getElementById('digit') as HTMLSelectElement;
-    const resultDiv = document.getElementById('result');
-
-    if (calcBtn && jurisSelect && yearInput && kmInput && digitSelect && resultDiv) {
-        calcBtn.addEventListener('click', () => {
-            const juris = jurisSelect.value;
-            const year = parseInt(yearInput.value);
-            const km = parseInt(kmInput.value);
-            const digit = digitSelect.value;
-
-            const res = getVTVStatus(juris, year, km);
-            
-            // THE FIX: Tell TS that 'digit' is a valid key of 'digitToMonth'
-            const monthName = digitToMonth[digit as keyof typeof digitToMonth];
-
-            resultDiv.style.display = 'block';
-            resultDiv.className = res.status === 'Exento' ? 'exento' : 'obligatorio';
+            const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `
-                <span style="font-size: 1.1rem;">Estado: <strong>${res.status}</strong></span><br>
-                <p style="margin: 5px 0;">${res.info}</p>
-                Tu mes asignado: <b>${monthName}</b>
+                <div style="color: ${res.color || 'inherit'}">
+                    <h2 style="margin:0">${res.status}</h2>
+                    <p>${res.info}</p>
+                </div>
             `;
         });
-    }
-
-    // 2. INSTALL LOGIC
-    let deferredPrompt: any;
-    const installArea = document.getElementById('installArea');
-    const installBtn = document.getElementById('installBtn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        if (installArea) {
-            installArea.style.display = 'block';
-        }
-    });
-
-    if (installBtn) {
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted' && installArea) {
-                    installArea.style.display = 'none';
-                }
-                deferredPrompt = null;
-            }
-        });
-    }
-</script>
-
+    </script>
 </Layout>
-

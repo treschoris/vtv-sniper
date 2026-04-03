@@ -1,58 +1,30 @@
 ---
-interface Props {
-	title?: string;
-}
-const { title = "¿Cuándo me toca la VTV? – Cronograma de Turnos 2024-2025" } = Astro.props;
+interface Props { title?: string; }
+const { title = "VTV Próxima – Calculadora de Vencimientos 2026" } = Astro.props;
 ---
 <!doctype html>
 <html lang="es">
 	<head>
-		<meta property="og:locale" content="es_AR" />
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<link rel="manifest" href="/manifest.json" />
-		<meta name="theme-color" content="#007bff" />
-
-		<!-- SEO Setup -->
 		<title>{title}</title>
-		<meta name="description" content="Calculadora gratuita de vencimiento VTV para CABA (Decreto 139) y Provincia. Consultá cuándo te toca según patente, año y KM." />
-		<link rel="canonical" href="https://netlify.app" />
-
-		<!-- Social Media -->
-		<meta property="og:title" content="VTV Turnos: Calculá tu vencimiento" />
-		<meta property="og:description" content="Evitá multas. Consultá cuándo te toca renovar la VTV al toque." />
-		<meta property="og:type" content="website" />
-
-		<!-- Google Structured Data (JSON-LD) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Calculadora VTV CABA y Provincia",
-  "operatingSystem": "All",
-  "applicationCategory": "UtilityApplication",
-  "description": "Calculadora gratuita para consultar el vencimiento de la VTV según patente, año y kilometraje para CABA y Provincia de Buenos Aires.",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "ARS"
-  },
-  "author": {
-    "@type": "Person",
-    "name": "Turnos VTV Ya"
-  }
-}
-</script>
-
+		<link rel="stylesheet" href="https://googleapis.com">
+		<style is:global>
+			:root {
+				--primary: #2563EB; --navy: #1E293B; --bg: #F8FAFC;
+			}
+			body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--navy); margin: 0; }
+			h1, h2 { font-family: 'Inter', sans-serif; letter-spacing: -0.02em; }
+			.card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); padding: 2rem; max-width: 450px; margin: 2rem auto; }
+			input, select, button { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border-radius: 8px; border: 1px solid #E2E8F0; font-size: 1rem; }
+			button { background: var(--primary); color: white; font-weight: bold; border: none; cursor: pointer; transition: transform 0.1s; }
+			button:active { transform: scale(0.98); }
+			.hidden { display: none; }
+		</style>
 	</head>
 	<body>
-		<slot />
+		<main>
+			<slot />
+		</main>
 	</body>
 </html>
-
-<style>
-	html, body { margin: 0; width: 100%; height: 100%; }
-</style>
-
