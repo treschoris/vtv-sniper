@@ -7,7 +7,7 @@ import Layout from '../layouts/Layout.astro';
     <div class="card">
         <header style="text-align: center; margin-bottom: 20px;">
             <h1 style="color: #2d3748; margin-bottom: 5px;">¿Cuándo me toca la VTV?</h1>
-            <p style="color: #718096; font-size: 0.9rem;">Calculadora de Vencimiento y Turnos</p>
+            <p style="color: #718096; font-size: 0.9rem;">Calculadora de turnos VTV, CABA y Provincia</p>
         </header>
         
         <label for="juris" style="font-size: 0.8rem; font-weight: bold; color: #4a5568;">Lugar de Patentamiento:</label>
@@ -24,15 +24,15 @@ import Layout from '../layouts/Layout.astro';
             {[2,3,4,5,6,7,8,9,0,1].map(d => <option value={d}>{d}</option>)}
         </select>
         
-        <button id="calcBtn">Consultar Fecha de Renovación</button>
+        <button id="calcBtn">Ver Fecha VTV según patente</button>
         
         <div id="result"></div>
 
         <!-- Netlify Form (Invisible but works for SEO and lead capture) -->
         <form name="avisos-vtv" method="POST" data-netlify="true" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
-            <p style="font-size: 0.85rem; margin-bottom: 8px;">¿Querés que te avisemos cuando haya turnos VTV?</p>
+            <p style="font-size: 0.85rem; margin-bottom: 8px;">¿Querés que te avisemos cuando vence la VTV?</p>
             <input type="email" name="email" placeholder="Tu email" required style="font-size: 0.8rem; padding: 8px;" />
-            <button type="submit" style="background: #28a745; padding: 8px; font-size: 0.8rem;">Avisame cuando me toque hacer la VTV</button>
+            <button type="submit" style="background: #28a745; padding: 8px; font-size: 0.8rem;">Avisame cuando me toca la VTV</button>
         </form>
     </div>
 
