@@ -7,6 +7,7 @@ const { title = "¿Cuándo me toca la VTV? – Cronograma de Turnos 2024-2025" }
 <!doctype html>
 <html lang="es">
 	<head>
+		<meta property="og:locale" content="es_AR" />
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -21,6 +22,28 @@ const { title = "¿Cuándo me toca la VTV? – Cronograma de Turnos 2024-2025" }
 		<meta property="og:title" content="VTV Turnos: Calculá tu vencimiento" />
 		<meta property="og:description" content="Evitá multas. Consultá cuándo te toca renovar la VTV al toque." />
 		<meta property="og:type" content="website" />
+
+		<!-- Google Structured Data (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Calculadora VTV CABA y Provincia",
+  "operatingSystem": "All",
+  "applicationCategory": "UtilityApplication",
+  "description": "Calculadora gratuita para consultar el vencimiento de la VTV según patente, año y kilometraje para CABA y Provincia de Buenos Aires.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "ARS"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Turnos VTV Ya"
+  }
+}
+</script>
+
 	</head>
 	<body>
 		<slot />
