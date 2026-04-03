@@ -1,12 +1,25 @@
+---
+// src/layouts/Layout.astro
+const { title = "¿Cuándo me toca la VTV? – Cronograma de Turnos 2024" } = Astro.props;
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="es"> <!-- Changed to Spanish for Google AR -->
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		
+		<!-- SEO Essentials -->
+		<title>{title}</title>
+		<meta name="description" content="Calculá el vencimiento de tu VTV según tu patente. Herramienta gratuita para conductores en Argentina. Recibí un aviso cuando haya turnos disponibles." />
+		<link rel="canonical" href="https://netlify.app" />
+
+		<!-- Social Media (WhatsApp/FB) -->
+		<meta property="og:title" content="Avisame VTV - ¿Cuándo te toca renovar?" />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://netlify.app" />
 	</head>
 	<body>
 		<slot />
@@ -14,10 +27,5 @@
 </html>
 
 <style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+	html, body { margin: 0; width: 100%; height: 100%; font-family: sans-serif; }
 </style>
