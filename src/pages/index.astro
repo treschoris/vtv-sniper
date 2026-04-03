@@ -37,11 +37,18 @@ import Layout from '../layouts/Layout.astro';
     </div>
 
     <!-- Trust Footer - Helps distinguish from scams -->
-    <footer style="max-width: 400px; margin: 30px auto; text-align: center; font-size: 0.75rem; color: #718096; line-height: 1.4;">
-        <p><strong>Aviso Importante:</strong> Herramienta informativa independiente.</p>
-        <p>No somos el sitio oficial del Gobierno ni solicitamos pagos. No pedimos datos de tarjetas.</p>
-        <p>Turno oficial en: <a href="https://gba.gob.ar" target="_blank" style="color: #007bff; text-decoration: underline;">vtv.minfra.gba.gob.ar</a></p>
-    </footer>
+    <!-- Updated Trust Footer with correct links -->
+<footer style="max-width: 400px; margin: 30px auto; text-align: center; font-size: 0.75rem; color: #718096; line-height: 1.6;">
+    <p><strong>Aviso Importante:</strong> Herramienta informativa independiente.</p>
+    <p class="mb-2">No somos el sitio oficial ni solicitamos pagos. No pedimos datos de tarjetas.</p>
+    
+    <div style="background: #edf2f7; padding: 10px; border-radius: 8px; margin-top: 10px;">
+        <p style="font-weight: bold; margin-bottom: 5px;">Links a Turnos Oficiales:</p>
+        <p>📍 <strong>CABA:</strong> <a href="https://www.suvtv.com.ar/turnos/" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: underline;">suvtv.com.ar/turnos</a></p>
+        <p>📍 <strong>Provincia (PBA):</strong> <a href="https://www.vtv.minfra.gba.gob.ar/ervtv.php" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: underline;">vtv.minfra.gba.gob.ar</a></p>
+    </div>
+</footer>
+
 
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; padding: 20px; }
