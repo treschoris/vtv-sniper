@@ -1,25 +1,26 @@
 ---
-// src/layouts/Layout.astro
-const { title = "¿Cuándo me toca la VTV? – Cronograma de Turnos 2024" } = Astro.props;
+interface Props {
+	title?: string;
+}
+const { title = "¿Cuándo me toca la VTV? – Cronograma de Turnos 2024-2025" } = Astro.props;
 ---
-
 <!doctype html>
-<html lang="es"> <!-- Changed to Spanish for Google AR -->
+<html lang="es">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		
-		<!-- SEO Essentials -->
+		<!-- SEO Setup -->
 		<title>{title}</title>
-		<meta name="description" content="Calculá el vencimiento de tu VTV según tu patente. Herramienta gratuita para conductores en Argentina. Recibí un aviso cuando haya turnos disponibles." />
+		<meta name="description" content="Calculadora gratuita de vencimiento VTV para CABA (Decreto 139) y Provincia. Consultá cuándo te toca según patente, año y KM." />
 		<link rel="canonical" href="https://netlify.app" />
 
-		<!-- Social Media (WhatsApp/FB) -->
-		<meta property="og:title" content="Avisame VTV - ¿Cuándo te toca renovar?" />
+		<!-- Social Media -->
+		<meta property="og:title" content="VTV Turnos: Calculá tu vencimiento" />
+		<meta property="og:description" content="Evitá multas. Consultá cuándo te toca renovar la VTV al toque." />
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://netlify.app" />
 	</head>
 	<body>
 		<slot />
@@ -27,5 +28,6 @@ const { title = "¿Cuándo me toca la VTV? – Cronograma de Turnos 2024" } = As
 </html>
 
 <style>
-	html, body { margin: 0; width: 100%; height: 100%; font-family: sans-serif; }
+	html, body { margin: 0; width: 100%; height: 100%; }
 </style>
+

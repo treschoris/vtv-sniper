@@ -1,95 +1,75 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-// This is the logic for the calculator
-const currentYear = new Date().getFullYear();
+// Logic imports stay the same
 ---
 
-<Layout title="¿Cuándo me toca la VTV? – Calendario y Alerta de Turnos 2024-2025">
-	<main class="max-w-2xl mx-auto p-6 font-sans text-gray-800">
-		
-		<!-- Header / SEO H1 -->
-		<header class="text-center mb-10">
-			<h1 class="text-3xl font-bold text-green-700 mb-2">Consultá el Vencimiento de tu VTV</h1>
-			<p class="text-lg text-gray-600 italic">Evitá multas. Enterate cuándo te toca y recibí un aviso al toque.</p>
-		</header>
+<Layout title="Consultá el Vencimiento de tu VTV - CABA y Provincia">
+    <div class="card">
+        <header style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #2d3748; margin-bottom: 5px;">¿Cuándo me toca la VTV?</h1>
+            <p style="color: #718096; font-size: 0.9rem;">Calculadora de Vencimiento y Turnos</p>
+        </header>
+        
+        <label for="juris" style="font-size: 0.8rem; font-weight: bold; color: #4a5568;">Jurisdicción:</label>
+        <select id="juris">
+            <option value="CABA">CABA (Decreto 139)</option>
+            <option value="PBA">Provincia Buenos Aires</option>
+        </select>
+        
+        <input id="year" type="number" placeholder="Año del auto (ej. 2022)" />
+        <input id="km" type="number" placeholder="Kilometraje (ej. 45000)" />
+        
+        <label for="digit" style="font-size: 0.8rem; font-weight: bold; color: #4a5568;">Último número de patente:</label>
+        <select id="digit">
+            {[2,3,4,5,6,7,8,9,0,1].map(d => <option value={d}>{d}</option>)}
+        </select>
+        
+        <button id="calcBtn">Consultar Fecha de Renovación</button>
+        
+        <div id="result"></div>
 
-		<!-- The Calculator Tool -->
-		<section class="bg-white shadow-lg rounded-lg p-8 border border-gray-100 mb-10">
-			<h2 class="text-xl font-semibold mb-4 text-center">Calculadora de Vencimiento</h2>
-			<p class="text-sm text-center mb-6 text-gray-500">Ingresá el último número de tu patente (dominio):</p>
-			
-			<div class="flex justify-center gap-2 mb-8 flex-wrap">
-				{[2, 3, 4, 5, 6, 7, 8, 9, 0, 1].map((num) => (
-					<button class="w-12 h-12 rounded-full border-2 border-green-600 text-green-700 font-bold hover:bg-green-600 hover:text-white transition-colors">
-						{num}
-					</button>
-				))}
-			</div>
+        <!-- Netlify Form (Invisible but works for SEO and lead capture) -->
+        <form name="avisos-vtv" method="POST" data-netlify="true" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+            <p style="font-size: 0.85rem; margin-bottom: 8px;">¿Querés que te avisemos cuando haya turnos?</p>
+            <input type="email" name="email" placeholder="Tu email" required style="font-size: 0.8rem; padding: 8px;" />
+            <button type="submit" style="background: #28a745; padding: 8px; font-size: 0.8rem;">Avisame al toque</button>
+        </form>
+    </div>
 
-			<div id="result" class="text-center p-4 bg-green-50 rounded-md hidden">
-				<p class="text-lg font-medium">Tu mes de renovación es: <span id="month-name" class="font-bold text-green-800 text-xl uppercase">---</span></p>
-			</div>
-		</section>
+    <!-- Trust Footer - Helps distinguish from scams -->
+    <footer style="max-width: 400px; margin: 30px auto; text-align: center; font-size: 0.75rem; color: #718096; line-height: 1.4;">
+        <p><strong>Aviso Importante:</strong> Herramienta informativa independiente.</p>
+        <p>No somos el sitio oficial del Gobierno ni solicitamos pagos. No pedimos datos de tarjetas.</p>
+        <p>Turno oficial en: <a href="https://gba.gob.ar" target="_blank" style="color: #007bff; text-decoration: underline;">vtv.minfra.gba.gob.ar</a></p>
+    </footer>
 
-		<!-- Netlify Form (Email Capture) -->
-		<section class="bg-blue-50 p-6 rounded-lg border border-blue-100 mb-10">
-			<h3 class="font-bold text-lg mb-2 text-blue-900">¿Querés que te avisemos?</h3>
-			<p class="text-sm mb-4 text-blue-800">Dejanos tu mail y te chiflamos cuando se habiliten turnos para tu terminación.</p>
-			
-			<form name="vtv-reminders" method="POST" data-netlify="true" class="flex flex-col sm:flex-row gap-2">
-				<input type="email" name="email" placeholder="Tu email" required class="flex-1 p-2 border border-blue-300 rounded" />
-				<button type="submit" class="bg-blue-700 text-white px-6 py-2 rounded font-bold hover:bg-blue-800">Avisame</button>
-			</form>
-		</section>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 16px; max-width: 400px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
+        button { background: #007bff; color: white; font-weight: bold; cursor: pointer; border: none; transition: opacity 0.2s; }
+        button:hover { opacity: 0.9; }
+        #result { margin-top: 10px; padding: 15px; border-radius: 8px; display: none; line-height: 1.5; }
+        .exento { background: #f0fff4; color: #22543d; border: 1px solid #c6f6d5; }
+        .obligatorio { background: #fff5f5; color: #822727; border: 1px solid #feb2b2; }
+    </style>
 
-		<!-- SEO FAQ Section -->
-		<section class="space-y-6 mb-10">
-			<h3 class="text-2xl font-bold text-gray-700 border-b pb-2">Preguntas Frecuentes</h3>
-			
-			<div>
-				<h4 class="font-bold">¿Cómo saber cuándo vence mi VTV por la patente?</h4>
-				<p class="text-gray-600">El número final de tu patente indica el mes que te toca. Por ejemplo: las patentes terminadas en 2 vencen en febrero, y las terminadas en 0 vencen en octubre. Enero y diciembre no tienen un número asignado para permitir rezagados.</p>
-			</div>
+    <script>
+        import { getVTVStatus, digitToMonth } from '../utils/vtvLogic.js';
 
-			<div>
-				<h4 class="font-bold">¿Qué pasa si tengo la VTV vencida en Provincia de Buenos Aires?</h4>
-				<p class="text-gray-600 text-sm">Circular con la oblea vencida puede resultar en multas costosas. Esta herramienta te ayuda a planificar con tiempo para que no te quedes sin turno.</p>
-			</div>
-		</section>
+        document.getElementById('calcBtn').addEventListener('click', () => {
+            const juris = document.getElementById('juris').value;
+            const year = parseInt(document.getElementById('year').value);
+            const km = parseInt(document.getElementById('km').value);
+            const digit = document.getElementById('digit').value;
 
-		<!-- Trust Disclaimer -->
-		<footer class="text-center py-10 border-t border-gray-200">
-			<p class="text-xs text-gray-500 uppercase tracking-widest font-bold mb-4">Información Importante</p>
-			<div class="bg-gray-50 p-4 rounded text-sm text-gray-600 inline-block text-left max-w-md border">
-				<p class="mb-2">⚠️ <strong>Este es un sitio independiente y gratuito.</strong></p>
-				<p class="mb-2">No somos el sitio oficial del Gobierno ni gestionamos turnos directamente. No solicitamos datos de tarjetas ni cobramos por este servicio.</p>
-				<p>Para reservar y pagar tu turno oficial, visitá siempre: <a href="https://gba.gob.ar" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline font-bold">vtv.minfra.gba.gob.ar</a></p>
-			</div>
-		</footer>
-
-	</main>
+            const res = getVTVStatus(juris, year, km);
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = res.status === 'Exento' ? 'exento' : 'obligatorio';
+            resultDiv.innerHTML = `<span style="font-size: 1.1rem;">Estado: <strong>${res.status}</strong></span><br><p style="margin: 5px 0;">${res.info}</p>Tu mes asignado: <b>${digitToMonth[digit]}</b>`;
+        });
+    </script>
 </Layout>
 
-<script>
-	// Simple logic to show the month based on the button clicked
-	const buttons = document.querySelectorAll('button');
-	const resultDiv = document.getElementById('result');
-	const monthSpan = document.getElementById('month-name');
-	
-	const months = {
-		'2': 'Febrero', '3': 'Marzo', '4': 'Abril', '5': 'Mayo', 
-		'6': 'Junio', '7': 'Julio', '8': 'Agosto', '9': 'Septiembre', 
-		'0': 'Octubre', '1': 'Noviembre'
-	};
-
-	buttons.forEach(btn => {
-		btn.addEventListener('click', () => {
-			const num = btn.innerText;
-			if (months[num]) {
-				monthSpan.innerText = months[num];
-				resultDiv.classList.remove('hidden');
-			}
-		});
-	});
-</script>
