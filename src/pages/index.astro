@@ -1,16 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-const faqs = [
-  { 
-    q: "¿Qué cambió con el Decreto 139/2026?", 
-    a: "En CABA, los autos 0km ahora realizan su primera VTV a los 5 años. Entre los 5 y 10 años, la verificación es cada 2 años." 
-  },
-  { 
-    q: "¿La Provincia (PBA) sigue igual?", 
-    a: "Sí. En PBA la VTV sigue siendo anual para autos con más de 2 años de antigüedad." 
-  }
-];
+// (Keep your FAQs array here as before)
 ---
 
 <Layout title="VTV Próxima: Calculadora Decreto 139 (Abril 2026)">
@@ -32,16 +22,18 @@ const faqs = [
         <div class="grid-inputs">
             <div class="input-group">
                 <label for="year">Año del Auto</label>
-                <input id="year" type="number" placeholder="Ej: 2021" />
+                <!-- FIXED: Min 1900, Max 2026, starts at 2024 -->
+                <input id="year" type="number" min="1900" max="2026" value="2024" placeholder="Ej: 2021" />
             </div>
             <div class="input-group">
                 <label for="km">Kilometraje</label>
-                <input id="km" type="number" placeholder="Ej: 45000" />
+                <!-- FIXED: Min 0, starts at 0 -->
+                <input id="km" type="number" min="0" value="0" placeholder="Ej: 45000" />
             </div>
         </div>
 
         <div id="caba-extra-fields" class="input-group">
-            <label for="patentMonth">Mes de Patentamiento</label>
+            <label for="patentMonth">Mes de Patentamiento (0km)</label>
             <select id="patentMonth">
                 {["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"].map((m, i) => (
                     <option value={i}>{m}</option>
@@ -58,11 +50,13 @@ const faqs = [
         
         <button id="calcBtn" class="primary-btn">Calcular Vencimiento</button>
         
-        <div id="result-container" class="hidden">
+        <!-- HIDDEN SECTION: Results + Lead Gen -->
+        <div id="reveal-area" class="hidden">
             <hr />
             <div id="result" class="result-box"></div>
+            
+            <button id="retryBtn" style="background: none; border: none; color: #64748B; font-size: 0.8rem; text-decoration: underline; cursor: pointer; margin-bottom: 1rem;">Calcular otro vehículo</button>
 
-            <!-- NETLIFY FORM -->
             <form id="vtv-form" name="vtv-avisos-2026" method="POST" data-netlify="true" class="form-container">
                 <input type="hidden" name="form-name" value="vtv-avisos-2026" />
                 <p class="form-title">🔔 ¿Querés un aviso 30 días antes?</p>
@@ -77,25 +71,7 @@ const faqs = [
         </div>
     </div>
 
-    <!-- FAQ SECTION (Good for SEO, keeps them on page) -->
-    <section class="faq-section">
-        <h3>Preguntas Frecuentes</h3>
-        {faqs.map(faq => (
-            <div class="faq-item">
-                <p><strong>{faq.q}</strong></p>
-                <p>{faq.a}</p>
-            </div>
-        ))}
-    </section>
-
-    <!-- OFFICIAL LINKS (Moved to bottom as small text) -->
-    <footer class="footer-info">
-        <div class="small-links">
-            <a href="https://suvtv.com.ar" target="_blank">Turnos CABA</a> • 
-            <a href="https://gba.gob.ar" target="_blank">Turnos PBA</a>
-        </div>
-        <p>© 2026 VTV Próxima - Información independiente.</p>
-    </footer>
+    <!-- (Keep FAQ and Footer here as before) -->
 
     <script>
     import { getVTVStatus } from './vtvLogic.js'; 
@@ -103,11 +79,12 @@ const faqs = [
     const juris = document.getElementById('juris') as HTMLSelectElement;
     const extraFields = document.getElementById('caba-extra-fields') as HTMLElement;
     const btn = document.getElementById('calcBtn') as HTMLButtonElement;
-    const resultContainer = document.getElementById('result-container') as HTMLElement;
+    const retryBtn = document.getElementById('retryBtn') as HTMLButtonElement;
+    const revealArea = document.getElementById('reveal-area') as HTMLElement;
     const vtvForm = document.getElementById('vtv-form') as HTMLFormElement;
     const successMsg = document.getElementById('form-success') as HTMLElement;
 
-    if (juris && extraFields && btn) {
+    if (juris && btn) {
         juris.addEventListener('change', (e) => {
             const target = e.target as HTMLSelectElement;
             target.value === 'PBA' ? extraFields.classList.add('hidden') : extraFields.classList.remove('hidden');
@@ -124,14 +101,23 @@ const faqs = [
                 parseInt((document.getElementById('patentMonth') as HTMLSelectElement).value)
             );
 
-            resultContainer.classList.remove('hidden');
+            revealArea.classList.remove('hidden');
+            btn.classList.add('hidden'); // Hide the main button so they focus on the result
+
             const resultDiv = document.getElementById('result') as HTMLElement;
             resultDiv.innerHTML = `
                 <div class="status-card" style="border-left: 5px solid ${res.color || '#2563EB'}">
-                    <h2 style="color: ${res.color || 'inherit'}; margin:0;">${res.status}</h2>
-                    <p style="margin:5px 0;">${res.info}</p>
+                    <h2 style="color: ${res.color || 'inherit'}; margin:0; font-size: 1.3rem;">${res.status}</h2>
+                    <p style="margin:5px 0; font-size: 0.95rem;">${res.info}</p>
+                    <p style="font-size: 0.8rem; color: #64748B;">${res.action}</p>
                 </div>
             `;
+        });
+
+        retryBtn.addEventListener('click', () => {
+            revealArea.classList.add('hidden');
+            btn.classList.remove('hidden');
+            (document.getElementById('km') as HTMLInputElement).value = "0";
         });
     }
 
@@ -150,28 +136,3 @@ const faqs = [
     }
     </script>
 </Layout>
-
-<style>
-    .card { background: white; border-radius: 12px; padding: 2rem; max-width: 420px; margin: 2rem auto; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); text-align: center; }
-    .status-pill { display: inline-block; background: #DCFCE7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; margin-bottom: 8px; }
-    .title { font-size: 1.6rem; color: #1E293B; margin: 0; }
-    .subtitle { color: #64748B; font-size: 0.9rem; margin: 4px 0 1.5rem; }
-    .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .input-group { margin-bottom: 1rem; display: flex; flex-direction: column; text-align: left; }
-    .input-group label { font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 4px; }
-    input, select { padding: 0.7rem; border-radius: 8px; border: 1px solid #E2E8F0; font-size: 0.9rem; }
-    .primary-btn { background: #2563EB; color: white; border: none; padding: 0.9rem; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; }
-    .status-card { background: #F8FAFC; padding: 1rem; border-radius: 0 8px 8px 0; text-align: left; margin-bottom: 1rem; }
-    .form-container { background: #F1F5F9; padding: 1rem; border-radius: 8px; text-align: left; }
-    .form-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: #1E293B; }
-    .form-row { display: flex; gap: 5px; }
-    .form-row input { flex: 2; padding: 6px; }
-    .submit-btn { background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; flex: 1; cursor: pointer; }
-    .success-box { background: #DCFCE7; padding: 1rem; border-radius: 8px; color: #166534; font-size: 0.9rem; }
-    .faq-section { max-width: 420px; margin: 2rem auto; padding: 0 1rem; font-size: 0.85rem; text-align: left; }
-    .faq-item { margin-bottom: 15px; border-bottom: 1px solid #E2E8F0; padding-bottom: 10px; }
-    .footer-info { text-align: center; font-size: 0.7rem; color: #94A3B8; margin: 3rem 0; }
-    .small-links a { color: #2563EB; text-decoration: none; font-weight: 600; }
-    .hidden { display: none; }
-    hr { border: 0; border-top: 1px solid #E2E8F0; margin: 1.2rem 0; }
-</style>
