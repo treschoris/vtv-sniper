@@ -1,8 +1,24 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const faqs = [
+  { 
+    q: "¿Qué cambió con el Decreto 139/2026?", 
+    a: "En CABA, los autos 0km ahora realizan su primera VTV a los 5 años (o 60.000km). Entre los 5 y 10 años, la verificación es cada 2 años." 
+  },
+  { 
+    q: "¿La Provincia de Buenos Aires (PBA) aceptó los cambios?", 
+    a: "No. PBA mantiene el régimen tradicional: la VTV es anual para vehículos con más de 2 años de antigüedad." 
+  },
+  { 
+    q: "¿Cuál es la multa por VTV vencida en 2026?", 
+    a: "Las multas en PBA pueden alcanzar las 300 Unidades Fijas, superando los $1.800.000 dependiendo del valor del combustible." 
+  }
+];
 ---
 
 <Layout title="VTV Próxima: Calculadora Decreto 139 (Abril 2026)">
+    <!-- 1. HERO / CALCULATOR SECTION -->
     <div class="card shadow-lg">
         <header class="text-center">
             <div class="status-pill">✅ Actualizado Abril 2026</div>
@@ -11,21 +27,21 @@ import Layout from '../layouts/Layout.astro';
         </header>
         
         <div class="input-group">
-            <label for="juris">📍 Jurisdicción</label>
+            <label for="juris">📍 Jurisdicción de Radicación</label>
             <select id="juris">
-                <option value="CABA">CABA (Decreto 139)</option>
-                <option value="PBA">Provincia de Buenos Aires</option>
+                <option value="CABA">CABA (Nuevas Reglas Decreto 139)</option>
+                <option value="PBA">Provincia de Buenos Aires (PBA)</option>
             </select>
         </div>
 
         <div class="grid-inputs">
             <div class="input-group">
-                <label for="year">Año del Auto</label>
-                <input id="year" type="number" min="1900" max="2026" value="2024" />
+                <label for="year">Año del Vehículo</label>
+                <input id="year" type="number" placeholder="Ej: 2021" />
             </div>
             <div class="input-group">
-                <label for="km">Kilometraje</label>
-                <input id="km" type="number" min="0" value="0" />
+                <label for="km">Kilometraje Total</label>
+                <input id="km" type="number" placeholder="Ej: 45000" />
             </div>
         </div>
 
@@ -39,113 +55,115 @@ import Layout from '../layouts/Layout.astro';
         </div>
         
         <div class="input-group">
-            <label for="digit">Patente termina en:</label>
+            <label for="digit">Último número de la Patente</label>
             <select id="digit">
                 {[2,3,4,5,6,7,8,9,0,1].map(d => <option value={d}>{d}</option>)}
             </select>
         </div>
         
-        <button id="calcBtn" class="primary-btn">Calcular Vencimiento</button>
+        <button id="calcBtn" class="primary-btn">Calcular mi Vencimiento</button>
         
-        <div id="reveal-area" class="hidden">
-            <hr class="divider" />
-            <div id="result"></div>
-            
-            <button id="retryBtn" class="retry-link">Calcular otro vehículo</button>
-
-            <form id="vtv-form" name="vtv-avisos-2026" method="POST" data-netlify="true" class="form-container">
-                <input type="hidden" name="form-name" value="vtv-avisos-2026" />
-                <p class="form-title">🔔 ¿Querés un aviso 30 días antes?</p>
-                <div class="form-row">
-                    <input type="email" name="email" placeholder="Tu email" required />
-                    <button type="submit" class="submit-btn">Avisame</button>
-                </div>
-            </form>
-            <div id="form-success" class="hidden success-box">
-                <p><strong>¡Listo! Te avisaremos por email. ✅</strong></p>
-            </div>
+        <div id="result-container" class="hidden">
+            <hr />
+            <div id="result" class="result-box"></div>
         </div>
     </div>
 
-    <!-- SECCIÓN FAQ -->
-    <section class="faq-container">
-        <h2>Preguntas Frecuentes</h2>
-        <div class="faq-item">
-            <p><strong>¿Qué cambió con el Decreto 139?</strong></p>
-            <p>En CABA, los autos nuevos ahora están exentos por 4 años o 64.000km. Luego, la VTV es cada 2 años hasta los 10 años de antigüedad.</p>
-        </div>
-        <div class="faq-item">
-            <p><strong>¿Provincia (PBA) también cambió?</strong></p>
-            <p>No. PBA mantiene la obligatoriedad anual para autos de más de 2 años, ignorando el decreto nacional por el momento.</p>
+    <!-- 2. OFFICIAL LINKS SECTION (Trust Signal) -->
+    <section class="links-section">
+        <h3>Sitios Oficiales de Turnos</h3>
+        <div class="link-grid">
+            <a href="https://suvtv.com.ar" target="_blank" class="link-card">Turnos CABA ↗</a>
+            <a href="https://gba.gob.ar" target="_blank" class="link-card">Turnos PBA ↗</a>
         </div>
     </section>
 
-    <footer class="footer">
-        <p>VTV Próxima 2026 - Guía independiente informativa.</p>
+    <!-- 3. FAQ SECTION (SEO & Retention) -->
+    <section class="faq-section">
+        <h3>Preguntas Frecuentes VTV 2026</h3>
+        {faqs.map(faq => (
+            <div class="faq-item">
+                <p class="faq-question"><strong>{faq.q}</strong></p>
+                <p class="faq-answer">{faq.a}</p>
+            </div>
+        ))}
+    </section>
+
+    <footer class="footer-info">
+        <p>© 2026 VTV Próxima - Información independiente para conductores.</p>
+        <p style="font-size: 0.7rem; margin-top: 10px;">Esta web no es oficial ni permite reservar turnos directamente. Siempre verifique la información en canales gubernamentales.</p>
     </footer>
 
-    <style>
-        .text-center { text-align: center; }
-        .status-pill { display: inline-block; background: #DCFCE7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; }
-        .title { margin: 0; color: var(--navy); }
-        .subtitle { color: #64748B; margin-top: 5px; }
-        .input-group { margin-bottom: 1.2rem; text-align: left; }
-        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #475569; }
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .primary-btn { background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
-        .primary-btn:hover { background: #1D4ED8; }
-        .divider { border: 0; border-top: 1px solid #E2E8F0; margin: 2rem 0; }
-        .retry-link { background: none; border: none; color: #64748B; font-size: 0.85rem; text-decoration: underline; cursor: pointer; display: block; margin: 0 auto 1.5rem; }
-        .form-container { background: #F1F5F9; padding: 1.5rem; border-radius: 8px; }
-        .form-title { font-weight: bold; font-size: 0.9rem; margin-bottom: 10px; }
-        .form-row { display: flex; gap: 8px; }
-        .submit-btn { background: #059669; color: white; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; }
-        .success-box { background: #DCFCE7; color: #166534; padding: 1rem; border-radius: 8px; text-align: center; }
-        .faq-container { max-width: 500px; margin: 3rem auto; padding: 0 1.5rem; }
-        .faq-item { margin-bottom: 1.5rem; font-size: 0.9rem; border-bottom: 1px solid #E2E8F0; padding-bottom: 1rem; }
-        .footer { text-align: center; color: #94A3B8; font-size: 0.8rem; margin: 2rem 0; }
-        .status-card { padding: 1rem; background: #F8FAFC; border-radius: 8px; text-align: left; }
-    </style>
-
     <script>
-        import { getVTVStatus } from '../logic/vtvLogic.js'; 
+    import { getVTVStatus } from './vtvLogic.js'; 
 
-        const juris = document.getElementById('juris');
-        const extraFields = document.getElementById('caba-extra-fields');
-        const btn = document.getElementById('calcBtn');
-        const retryBtn = document.getElementById('retryBtn');
-        const revealArea = document.getElementById('reveal-area');
-        const vtvForm = document.getElementById('vtv-form');
+    const juris = document.getElementById('juris') as HTMLSelectElement;
+    const extraFields = document.getElementById('caba-extra-fields') as HTMLElement;
+    const btn = document.getElementById('calcBtn') as HTMLButtonElement;
+    const resultContainer = document.getElementById('result-container') as HTMLElement;
 
-        // Logic for hiding/showing fields
+    if (juris && extraFields && btn) {
         juris.addEventListener('change', (e) => {
-            extraFields.classList.toggle('hidden', e.target.value === 'PBA');
+            const target = e.target as HTMLSelectElement;
+            target.value === 'PBA' ? extraFields.classList.add('hidden') : extraFields.classList.remove('hidden');
         });
 
         btn.addEventListener('click', () => {
+            const yearInput = document.getElementById('year') as HTMLInputElement;
+            const kmInput = document.getElementById('km') as HTMLInputElement;
+            const digitSelect = document.getElementById('digit') as HTMLSelectElement;
+            const monthSelect = document.getElementById('patentMonth') as HTMLSelectElement;
+            const resultDiv = document.getElementById('result') as HTMLElement;
+
             const res = getVTVStatus(
                 juris.value,
-                parseInt(document.getElementById('year').value),
-                parseInt(document.getElementById('km').value),
-                parseInt(document.getElementById('digit').value),
-                parseInt(document.getElementById('patentMonth').value)
+                parseInt(yearInput.value) || 0,
+                parseInt(kmInput.value) || 0,
+                parseInt(digitSelect.value),
+                parseInt(monthSelect.value)
             );
 
-            revealArea.classList.remove('hidden');
-            btn.classList.add('hidden');
-
-            document.getElementById('result').innerHTML = `
-                <div class="status-card" style="border-left: 5px solid ${res.color}">
-                    <h2 style="color: ${res.color}; margin:0;">${res.status}</h2>
-                    <p style="margin:5px 0;">${res.info}</p>
-                    <p style="font-size: 0.85rem; color: #64748B;">${res.action}</p>
+            resultContainer.classList.remove('hidden');
+            resultDiv.innerHTML = `
+                <div class="status-card" style="border-left: 5px solid ${res.color || '#2563EB'}">
+                    <h2 class="status-title" style="color: ${res.color || 'inherit'}">${res.status}</h2>
+                    <p class="status-info">${res.info}</p>
+                    ${res.action ? `<p class="status-action"><strong>Acción:</strong> ${res.action}</p>` : ''}
                 </div>
             `;
         });
-
-        retryBtn.addEventListener('click', () => {
-            revealArea.classList.add('hidden');
-            btn.classList.remove('hidden');
-        });
+    }
     </script>
 </Layout>
+
+<style>
+    /* Styling for FAQ and Links */
+    .links-section, .faq-section { max-width: 500px; margin: 2rem auto; padding: 0 1rem; text-align: left; }
+    .links-section h3, .faq-section h3 { font-size: 1.2rem; color: #1E293B; margin-bottom: 1rem; }
+    
+    .link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .link-card { background: #E2E8F0; padding: 12px; border-radius: 8px; text-decoration: none; color: #2563EB; font-weight: 600; font-size: 0.9rem; text-align: center; }
+    .link-card:hover { background: #CBD5E1; }
+
+    .faq-item { background: white; border: 1px solid #E2E8F0; padding: 1rem; border-radius: 8px; margin-bottom: 10px; }
+    .faq-question { font-size: 0.95rem; color: #1E293B; margin-bottom: 5px; }
+    .faq-answer { font-size: 0.9rem; color: #475569; line-height: 1.5; margin: 0; }
+
+    /* Calculator styles carried over */
+    .text-center { text-align: center; }
+    .status-pill { display: inline-block; background: #DCFCE7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; }
+    .title { font-size: 1.75rem; color: #1E293B; margin-bottom: 0; }
+    .subtitle { color: #64748B; font-size: 0.95rem; margin-top: 4px; margin-bottom: 1.5rem; }
+    .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .input-group { margin-bottom: 1.2rem; display: flex; flex-direction: column; text-align: left; }
+    .input-group label { font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 6px; }
+    .primary-btn { background: #2563EB; color: white; border: none; padding: 1rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+    .primary-btn:hover { background: #1D4ED8; }
+    .result-box { margin-top: 1rem; }
+    .status-card { background: #F1F5F9; padding: 1rem; border-radius: 0 8px 8px 0; text-align: left; }
+    .status-title { margin: 0; font-size: 1.4rem; }
+    .status-info { margin: 8px 0; color: #334155; }
+    .status-action { font-size: 0.9rem; color: #1E293B; }
+    .footer-info { max-width: 500px; margin: 3rem auto; font-size: 0.8rem; color: #94A3B8; text-align: center; line-height: 1.4; padding: 0 1rem; }
+    hr { border: 0; border-top: 1px solid #E2E8F0; margin: 1.5rem 0; }
+</style>
