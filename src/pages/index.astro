@@ -1,8 +1,24 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const faqs = [
+  { 
+    q: "¿Qué cambió con el Decreto 139/2026?", 
+    a: "En CABA, los autos 0km ahora realizan su primera VTV a los 5 años (o 60.000km). Entre los 5 y 10 años, la verificación es cada 2 años." 
+  },
+  { 
+    q: "¿La Provincia de Buenos Aires (PBA) aceptó los cambios?", 
+    a: "No. PBA mantiene el régimen tradicional: la VTV es anual para vehículos con más de 2 años de antigüedad." 
+  },
+  { 
+    q: "¿Cuál es la multa por VTV vencida en 2026?", 
+    a: "Las multas en PBA pueden alcanzar las 300 Unidades Fijas, superando los $1.800.000 dependiendo del valor del combustible." 
+  }
+];
 ---
 
 <Layout title="VTV Próxima: Calculadora Decreto 139 (Abril 2026)">
+    <!-- 1. HERO / CALCULATOR SECTION -->
     <div class="card shadow-lg">
         <header class="text-center">
             <div class="status-pill">✅ Actualizado Abril 2026</div>
@@ -21,7 +37,7 @@ import Layout from '../layouts/Layout.astro';
         <div class="grid-inputs">
             <div class="input-group">
                 <label for="year">Año del Vehículo</label>
-                <input id="year" type="number" placeholder="Ej: 2021" min="1900" max="2027" />
+                <input id="year" type="number" placeholder="Ej: 2021" />
             </div>
             <div class="input-group">
                 <label for="km">Kilometraje Total</label>
@@ -53,12 +69,32 @@ import Layout from '../layouts/Layout.astro';
         </div>
     </div>
 
+    <!-- 2. OFFICIAL LINKS SECTION (Trust Signal) -->
+    <section class="links-section">
+        <h3>Sitios Oficiales de Turnos</h3>
+        <div class="link-grid">
+            <a href="https://suvtv.com.ar" target="_blank" class="link-card">Turnos CABA ↗</a>
+            <a href="https://gba.gob.ar" target="_blank" class="link-card">Turnos PBA ↗</a>
+        </div>
+    </section>
+
+    <!-- 3. FAQ SECTION (SEO & Retention) -->
+    <section class="faq-section">
+        <h3>Preguntas Frecuentes VTV 2026</h3>
+        {faqs.map(faq => (
+            <div class="faq-item">
+                <p class="faq-question"><strong>{faq.q}</strong></p>
+                <p class="faq-answer">{faq.a}</p>
+            </div>
+        ))}
+    </section>
+
     <footer class="footer-info">
-        <p>⚠️ <strong>Información Importante:</strong> El Decreto 139/2026 extendió plazos en CABA, pero PBA mantiene el régimen anual. Esta herramienta es una guía informativa.</p>
+        <p>© 2026 VTV Próxima - Información independiente para conductores.</p>
+        <p style="font-size: 0.7rem; margin-top: 10px;">Esta web no es oficial ni permite reservar turnos directamente. Siempre verifique la información en canales gubernamentales.</p>
     </footer>
 
     <script>
-    // FIXED PATH: Assumes vtvLogic.js is in the same directory (src/pages/)
     import { getVTVStatus } from './vtvLogic.js'; 
 
     const juris = document.getElementById('juris') as HTMLSelectElement;
@@ -101,6 +137,19 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <style>
+    /* Styling for FAQ and Links */
+    .links-section, .faq-section { max-width: 500px; margin: 2rem auto; padding: 0 1rem; text-align: left; }
+    .links-section h3, .faq-section h3 { font-size: 1.2rem; color: #1E293B; margin-bottom: 1rem; }
+    
+    .link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .link-card { background: #E2E8F0; padding: 12px; border-radius: 8px; text-decoration: none; color: #2563EB; font-weight: 600; font-size: 0.9rem; text-align: center; }
+    .link-card:hover { background: #CBD5E1; }
+
+    .faq-item { background: white; border: 1px solid #E2E8F0; padding: 1rem; border-radius: 8px; margin-bottom: 10px; }
+    .faq-question { font-size: 0.95rem; color: #1E293B; margin-bottom: 5px; }
+    .faq-answer { font-size: 0.9rem; color: #475569; line-height: 1.5; margin: 0; }
+
+    /* Calculator styles carried over */
     .text-center { text-align: center; }
     .status-pill { display: inline-block; background: #DCFCE7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; }
     .title { font-size: 1.75rem; color: #1E293B; margin-bottom: 0; }
@@ -115,6 +164,6 @@ import Layout from '../layouts/Layout.astro';
     .status-title { margin: 0; font-size: 1.4rem; }
     .status-info { margin: 8px 0; color: #334155; }
     .status-action { font-size: 0.9rem; color: #1E293B; }
-    .footer-info { max-width: 450px; margin: 2rem auto; font-size: 0.8rem; color: #94A3B8; text-align: center; line-height: 1.4; }
+    .footer-info { max-width: 500px; margin: 3rem auto; font-size: 0.8rem; color: #94A3B8; text-align: center; line-height: 1.4; padding: 0 1rem; }
     hr { border: 0; border-top: 1px solid #E2E8F0; margin: 1.5rem 0; }
 </style>
