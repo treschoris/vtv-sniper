@@ -1,86 +1,182 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getVTVStatus, MONTH_NAMES } from '../vtvLogic';
+
+interface FormData {
+  jurisdiction: string;
+  year: number;
+  km: number;
+  lastDigit: number;
+  patentMonth: number;
+}
 ---
+
 <Layout title="VTV Próxima: Calculá tu vencimiento Decreto 139">
-    <div class="card">
-        <header style="text-align: center;">
-            <h1 style="margin-bottom: 0;">VTV Próxima</h1>
-            <p style="color: #64748b; margin-bottom: 1.5rem;">Calculadora oficial 2026</p>
-        </header>
-        
-        <label>Jurisdicción:</label>
-        <select id="juris">
-            <option value="CABA">CABA (Decreto 139)</option>
-            <option value="PBA">Provincia de Buenos Aires</option>
+  <div class="card">
+    <header style="text-align: center;">
+      <h1 style="margin-bottom: 0;">VTV Próxima</h1>
+      <p style="color: #64748b; margin-bottom: 1.5rem;">Calculadora oficial 2026</p>
+    </header>
+
+    <form id="vtvForm">
+      <div class="form-group">
+        <label for="juris">Jurisdicción:</label>
+        <select id="juris" name="jurisdiction" required>
+          <option value="CABA">CABA (Decreto 139)</option>
+          <option value="PBA">Provincia de Buenos Aires</option>
         </select>
-        
-        <div id="caba-extra-fields">
-            <label>Mes de Patentamiento:</label>
-            <select id="patentMonth">
-                {["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"].map((m, i) => (
-                    <option value={i}>{m}</option>
-                ))}
-            </select>
+      </div>
+
+      <div id="cabaExtraFields" class="form-group" style="display: block;">
+        <label for="patentMonth">Mes de Patentamiento:</label>
+        <select id="patentMonth" name="patentMonth" required>
+          {MONTH_NAMES.map((month, index) => (
+            <option value={index}>{month}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="year">Año de Patentamiento:</label>
+        <input
+          id="year"
+          name="year"
+          type="number"
+          placeholder="Ej. 2022"
+          min="1900"
+          max="2026"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="km">Kilometraje Actual:</label>
+        <input
+          id="km"
+          name="km"
+          type="number"
+          placeholder="Ej. 45000"
+          min="0"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="digit">Patente Termina en:</label>
+        <select id="digit" name="lastDigit" required>
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
+            <option value={digit}>{digit}</option>
+          ))}
+        </select>
+      </div>
+
+      <button type="submit" id="calcBtn" class="btn-primary">
+        Calcular Vencimiento
+      </button>
+    </form>
+
+    <div id="result" class="result-container"></div>
+  </div>
+
+  <script>
+    import { getVTVStatus } from '../vtvLogic';
+
+    // Get form elements
+    const form = document.getElementById('vtvForm') as HTMLFormElement;
+    const jurisSelect = document.getElementById('juris') as HTMLSelectElement;
+    const cabaFields = document.getElementById('cabaExtraFields') as HTMLElement;
+    const resultDiv = document.getElementById('result') as HTMLElement;
+
+    // Toggle CABA-specific fields based on jurisdiction
+    jurisSelect.addEventListener('change', (e) => {
+      const target = e.target as HTMLSelectElement;
+      cabaFields.style.display = target.value === 'CABA' ? 'block' : 'none';
+    });
+
+    // Handle form submission
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const jurisdiction = formData.get('jurisdiction') as string;
+      const year = parseInt(formData.get('year') as string, 10);
+      const km = parseInt(formData.get('km') as string, 10);
+      const lastDigit = parseInt(formData.get('lastDigit') as string, 10);
+      const patentMonth = parseInt(formData.get('patentMonth') as string, 10);
+
+      const result = getVTVStatus(jurisdiction, year, km, lastDigit, patentMonth);
+
+      resultDiv.innerHTML = `
+        <div class="result-box" style="border-left: 4px solid ${result.color || '#2563EB'};">
+          <h2 class="result-status">${result.status}</h2>
+          <p class="result-info">${result.info}</p>
         </div>
+      `;
+    });
+  </script>
 
-        <input id="year" type="number" placeholder="Año (ej. 2022)" />
-        <input id="km" type="number" placeholder="Kilometraje actual" />
-        
-        <label>Patente termina en:</label>
-        <select id="digit">
-            {[2,3,4,5,6,7,8,9,0,1].map(d => <option value={d}>{d}</option>)}
-        </select>
-        
-        <button id="calcBtn">Calcular Vencimiento</button>
-        
-        <div id="result" style="margin-top: 1.5rem; text-align: center; font-weight: 500;"></div>
-    </div>
-
-    <script>
-    // 1. FIXED PATH: Ensure this matches your folder (usually /src/vtvLogic.js)
-    // If your file is in 'src/logic/vtvLogic.js', use: '../logic/vtvLogic.js'
-    import { getVTVStatus } from '../vtvLogic.js'; 
-
-    // 2. TYPE CASTING: Telling TypeScript these are Input/Select elements
-    const juris = document.getElementById('juris') as HTMLSelectElement;
-    const extraFields = document.getElementById('caba-extra-fields') as HTMLElement;
-    const btn = document.getElementById('calcBtn') as HTMLButtonElement;
-
-    if (juris && extraFields && btn) {
-        // Toggle Month Field visibility
-        juris.addEventListener('change', (e) => {
-            const target = e.target as HTMLSelectElement;
-            if (target.value === 'PBA') {
-                extraFields.classList.add('hidden');
-            } else {
-                extraFields.classList.remove('hidden');
-            }
-        });
-
-        btn.addEventListener('click', () => {
-            // Fetching values with proper type casting
-            const yearInput = document.getElementById('year') as HTMLInputElement;
-            const kmInput = document.getElementById('km') as HTMLInputElement;
-            const digitSelect = document.getElementById('digit') as HTMLSelectElement;
-            const monthSelect = document.getElementById('patentMonth') as HTMLSelectElement;
-            const resultDiv = document.getElementById('result') as HTMLElement;
-
-            const res = getVTVStatus(
-                juris.value,
-                parseInt(yearInput.value) || 0,
-                parseInt(kmInput.value) || 0,
-                parseInt(digitSelect.value),
-                parseInt(monthSelect.value)
-            );
-
-            resultDiv.innerHTML = `
-                <div style="color: ${res.color || 'inherit'}">
-                    <h2 style="margin:0">${res.status}</h2>
-                    <p>${res.info}</p>
-                </div>
-            `;
-        });
+  <style>
+    .form-group {
+      margin-bottom: 1.25rem;
     }
-</script>
 
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #1e293b;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .result-container {
+      margin-top: 2rem;
+    }
+
+    .result-box {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 1.5rem;
+      animation: slideIn 0.3s ease;
+    }
+
+    .result-status {
+      margin: 0 0 0.75rem 0;
+      font-size: 1.5rem;
+    }
+
+    .result-info {
+      margin: 0;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </Layout>

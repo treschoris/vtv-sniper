@@ -1,30 +1,124 @@
 ---
-interface Props { title?: string; }
-const { title = "VTV Próxima – Calculadora de Vencimientos 2026" } = Astro.props;
+interface Props {
+  title?: string;
+}
+
+const {
+  title = "VTV Próxima – Calculadora de Vencimientos 2026",
+} = Astro.props;
 ---
+
 <!doctype html>
 <html lang="es">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<title>{title}</title>
-		<link rel="stylesheet" href="https://googleapis.com">
-		<style is:global>
-			:root {
-				--primary: #2563EB; --navy: #1E293B; --bg: #F8FAFC;
-			}
-			body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--navy); margin: 0; }
-			h1, h2 { font-family: 'Inter', sans-serif; letter-spacing: -0.02em; }
-			.card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); padding: 2rem; max-width: 450px; margin: 2rem auto; }
-			input, select, button { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border-radius: 8px; border: 1px solid #E2E8F0; font-size: 1rem; }
-			button { background: var(--primary); color: white; font-weight: bold; border: none; cursor: pointer; transition: transform 0.1s; }
-			button:active { transform: scale(0.98); }
-			.hidden { display: none; }
-		</style>
-	</head>
-	<body>
-		<main>
-			<slot />
-		</main>
-	</body>
-</html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Calculadora oficial de vencimientos VTV 2026 para CABA y PBA" />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style is:global>
+      :root {
+        --primary: #2563eb;
+        --navy: #1e293b;
+        --bg: #f8fafc;
+        --border: #e2e8f0;
+        --text-muted: #64748b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Roboto", sans-serif;
+        background: var(--bg);
+        color: var(--navy);
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "Inter", sans-serif;
+        letter-spacing: -0.02em;
+        font-weight: 600;
+      }
+
+      main {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        padding: 2rem;
+        max-width: 450px;
+        width: 100%;
+        margin: 1rem;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 0.8rem;
+        margin: 0.5rem 0;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        font-size: 1rem;
+        font-family: inherit;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      input::placeholder {
+        color: var(--text-muted);
+      }
+
+      button {
+        width: 100%;
+        padding: 0.8rem;
+        margin: 0.5rem 0;
+        border-radius: 8px;
+        border: none;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      @media (max-width: 640px) {
+        .card {
+          padding: 1.5rem;
+        }
+
+        h1
