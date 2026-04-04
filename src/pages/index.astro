@@ -37,27 +37,42 @@ import Layout from '../layouts/Layout.astro';
     </div>
 
     <script>
-        import { getVTVStatus } from '../logic/vtvLogic.js';
+    // 1. FIXED PATH: Ensure this matches your folder (usually /src/vtvLogic.js)
+    // If your file is in 'src/logic/vtvLogic.js', use: '../logic/vtvLogic.js'
+    import { getVTVStatus } from '../vtvLogic.js'; 
 
-        const juris = document.getElementById('juris');
-        const extraFields = document.getElementById('caba-extra-fields');
-        const btn = document.getElementById('calcBtn');
+    // 2. TYPE CASTING: Telling TypeScript these are Input/Select elements
+    const juris = document.getElementById('juris') as HTMLSelectElement;
+    const extraFields = document.getElementById('caba-extra-fields') as HTMLElement;
+    const btn = document.getElementById('calcBtn') as HTMLButtonElement;
 
+    if (juris && extraFields && btn) {
         // Toggle Month Field visibility
         juris.addEventListener('change', (e) => {
-            extraFields.classList.toggle('hidden', e.target.value === 'PBA');
+            const target = e.target as HTMLSelectElement;
+            if (target.value === 'PBA') {
+                extraFields.classList.add('hidden');
+            } else {
+                extraFields.classList.remove('hidden');
+            }
         });
 
         btn.addEventListener('click', () => {
+            // Fetching values with proper type casting
+            const yearInput = document.getElementById('year') as HTMLInputElement;
+            const kmInput = document.getElementById('km') as HTMLInputElement;
+            const digitSelect = document.getElementById('digit') as HTMLSelectElement;
+            const monthSelect = document.getElementById('patentMonth') as HTMLSelectElement;
+            const resultDiv = document.getElementById('result') as HTMLElement;
+
             const res = getVTVStatus(
                 juris.value,
-                parseInt(document.getElementById('year').value),
-                parseInt(document.getElementById('km').value),
-                parseInt(document.getElementById('digit').value),
-                parseInt(document.getElementById('patentMonth').value)
+                parseInt(yearInput.value) || 0,
+                parseInt(kmInput.value) || 0,
+                parseInt(digitSelect.value),
+                parseInt(monthSelect.value)
             );
 
-            const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `
                 <div style="color: ${res.color || 'inherit'}">
                     <h2 style="margin:0">${res.status}</h2>
@@ -65,5 +80,7 @@ import Layout from '../layouts/Layout.astro';
                 </div>
             `;
         });
-    </script>
+    }
+</script>
+
 </Layout>
